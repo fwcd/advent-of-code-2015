@@ -20,9 +20,6 @@ def cookies(total, ingreds):
                 yield cookie
             ingreds[ingred] = props
 
-def best_cookie(total, ingreds):
-    return max(score(c) for c in cookies(total, ingreds))
-
 def main():
     with open('resources/day15.txt', 'r') as f:
         ingreds = dict()
@@ -34,7 +31,8 @@ def main():
                 for prop, value in re.findall(r'(\w+)\s+(-?\d+)', raw_props):
                     props[prop] = int(value)
                 ingreds[name] = props
-        print(f'Part 1: {best_cookie(100, ingreds)}')
+        print(f'Part 1: {max(score(c) for c in cookies(100, ingreds))}')
+        print(f"Part 2: {max(score(c) for c in cookies(100, ingreds) if c['calories'] == 500)}")
 
 if __name__ == "__main__":
     main()
