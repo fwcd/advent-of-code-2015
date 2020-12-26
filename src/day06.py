@@ -1,7 +1,8 @@
 import re
 
 with open('resources/day06.txt', 'r') as f:
-    grid = set()
+    grid1 = set()
+    grid2 = [[0 for i in range(1000)] for j in range(1000)]
     for l in f.readlines():
         match = re.search(r'(toggle|turn (?:on|off))\s+(\d+),(\d+)\s+through\s+(\d+),(\d+)', l.strip())
         if match:
@@ -12,13 +13,10 @@ with open('resources/day06.txt', 'r') as f:
             for y in range(y1, y2 + 1):
                 for x in range(x1, x2 + 1):
                     i = y * 1000 + x
-                    if on:
-                        grid.add(i)
-                    elif toggle:
-                        if i in grid:
-                            grid.remove(i)
-                        else:
-                            grid.add(i)
+                    if on or (toggle and not i in grid1):
+                        grid1.add(i)
                     else:
-                        grid.discard(i)
-    print(f'Part 1: {len(grid)}')
+                        grid1.discard(i)
+                    grid2[y][x] = max(0, grid2[y][x] + (2 if toggle else 1 if on else -1))
+    print(f'Part 1: {len(grid1)}')
+    print(f'Part 2: {sum(sum(row) for row in grid2)}')
