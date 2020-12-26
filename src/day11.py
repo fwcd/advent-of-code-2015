@@ -35,14 +35,19 @@ def pairs(n):
 def valid(n):
     return increasing_seq(n) and pairs(n) and not any(c in digits(n) for c in 'iol')
 
+def next_valids(n):
+    while True:
+        while not valid(n):
+            n += 1
+        yield n
+        n += 1
+
 def main():
     with open('resources/day11.txt', 'r') as f:
         n = to_num(f.read().strip())
-        while not valid(n):
-            if n % 100000 == 0:
-                print(n)
-            n += 1
-        print(from_num(n))
+        pws = next_valids(n)
+        print(f'Part 1: {from_num(next(pws))}')
+        print(f'Part 2: {from_num(next(pws))}')
 
 if __name__ == "__main__":
     main()
