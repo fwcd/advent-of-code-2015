@@ -17,6 +17,7 @@ def find_solution(d, people):
 def main():
     d = dict()
     people = set()
+
     with open('resources/day13.txt', 'r') as f:
         for left, raw_sign, raw_delta, right in re.findall(r'(\w+)\s+would\s+(\w+)\s+(\d+)\s+happiness units by sitting next to\s+(\w+)\.', f.read()):
             sign = 1 if raw_sign == 'gain' else -1
@@ -24,7 +25,15 @@ def main():
             d[(left, right)] = delta
             people.add(left)
             people.add(right)
+
     print(f'Part 1: {find_solution(d, people)}')
+
+    for p in people:
+        d[('Me', p)] = 0
+        d[(p, 'Me')] = 0
+    people.add('Me')
+
+    print(f'Part 2: {find_solution(d, people)}')
 
 if __name__ == "__main__":
     main()
