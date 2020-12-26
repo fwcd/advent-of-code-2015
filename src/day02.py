@@ -1,7 +1,11 @@
 with open('resources/day02.txt', 'r') as f:
-    total = 0
+    area = 0
+    ribbon = 0
     for line in f.readlines():
         [l, w, h] = map(int, line.strip().split('x'))
-        sides = [l * w, w * h, h * l]
-        total += sum(map(lambda x: 2 * x, sides)) + min(sides)
-    print(f'Part 1: {total}')
+        areas = [l * w, w * h, h * l]
+        perimeters = map(lambda x: 2 * x, [l + w, w + h, h + l])
+        area += sum(map(lambda x: 2 * x, areas)) + min(areas)
+        ribbon += min(perimeters) + l * w * h
+    print(f'Part 1: {area}')
+    print(f'Part 2: {ribbon}')
