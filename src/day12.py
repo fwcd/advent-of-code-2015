@@ -1,22 +1,11 @@
 import json
 
-def part2_total(elem):
+def total(elem, ignored=None):
     t = type(elem)
     if t is dict:
-        return sum(part2_total(v) for k, v in elem.items()) if 'red' not in elem.values() else 0
+        return sum(total(v, ignored) for _, v in elem.items()) if not ignored or ignored not in elem.values() else 0
     elif t is list:
-        return sum(map(part2_total, elem))
-    elif t is int:
-        return elem
-    else:
-        return 0
-
-def part1_total(elem):
-    t = type(elem)
-    if t is dict:
-        return sum(part1_total(v) for _, v in elem.items())
-    elif t is list:
-        return sum(map(part1_total, elem))
+        return sum(total(v, ignored) for v in elem)
     elif t is int:
         return elem
     else:
@@ -25,8 +14,8 @@ def part1_total(elem):
 def main():
     with open('resources/day12.json', 'r') as f:
         elem = json.loads(f.read().strip())
-        print(f'Part 1: {part1_total(elem)}')
-        print(f'Part 2: {part2_total(elem)}')
+        print(f'Part 1: {total(elem)}')
+        print(f"Part 2: {total(elem, ignored='red')}")
 
 if __name__ == "__main__":
     main()
