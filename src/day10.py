@@ -1,4 +1,4 @@
-def look_and_say(n):
+def look_and_say(s):
     last = None
     count = 1
     result = ''
@@ -7,19 +7,26 @@ def look_and_say(n):
         nonlocal last
         if last:
             result += f'{count}{last}'
-    for digit in map(int, str(n)):
-        if digit == last:
+    for c in s:
+        if c == last:
             count += 1
         else:
             say()
             count = 1
-        last = digit
+        last = c
     say()
-    return int(result)
+    return result
 
-n = 1113122113
+def iterate(f, n, x):
+    y = x
+    for i in range(n):
+        y = f(y)
+    return y
 
-for i in range(40):
-    n = look_and_say(n)
+n = '1113122113'
 
-print(f'Part 1: {len(str(n))}')
+part1 = iterate(look_and_say, 40, n)
+print(f'Part 1: {len(str(part1))}')
+
+part2 = iterate(look_and_say, 10, part1)
+print(f'Part 1: {len(str(part2))}')
