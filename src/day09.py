@@ -1,19 +1,23 @@
 import re
 
-def shortest_from(start, d, locs):
+def best_from(start, f, d, locs):
     if len(locs) == 0:
         return 0
     else:
-        total = 10000000000
+        total = None
         for loc in set(locs):
             if (start, loc) in d:
                 locs.remove(loc)
-                total = min(total, d[(start, loc)] + shortest_from(loc, d, locs))
+                dist = d[(start, loc)] + best_from(loc, f, d, locs)
+                if total == None:
+                    total = dist
+                else:
+                    total = f(total, dist)
                 locs.add(loc)
         return total
 
-def shortest(d, locs):
-    return min(shortest_from(loc, d, locs.difference({loc})) for loc in locs)
+def best(f, d, locs):
+    return f(best_from(loc, f, d, locs.difference({loc})) for loc in locs)
 
 with open('resources/day09.txt', 'r') as f:
     d = dict()
@@ -25,5 +29,5 @@ with open('resources/day09.txt', 'r') as f:
         locs.add(src)
         locs.add(dest)
     
-    part1 = shortest(d, locs)
-    print(f'Part 1: {part1}')
+    print(f'Part 1: {best(min, d, locs)}')
+    print(f'Part 2: {best(max, d, locs)}')
