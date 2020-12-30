@@ -1,4 +1,5 @@
 import re
+import sys
 
 def apply(rules, inp):
     molecules = set()
@@ -100,7 +101,7 @@ def cyk(cnf, inp, start):
     for (i, tok) in enumerate(inp):
         table[0][i] = {lhs: skips for [lhs, rhs, skips] in cnf if rhs == [tok] or lhs == tok}
     for l in range(2, len(inp) + 1): # length of span
-        print('at', l)
+        sys.stdout.write(f'\rat {l}')
         for s in range(1, len(inp) - l + 2): # start of span
             for p in range(1, l): # partition of span
                 for [a, rhs, skips] in cnf:
@@ -108,10 +109,11 @@ def cyk(cnf, inp, start):
                         [b, c] = rhs
                         if b in table[p - 1][s - 1] and c in table[l - p - 1][s + p - 1]:
                             table[l - 1][s - 1][a] = value(a) + skips + table[p - 1][s - 1][b] + table[l - p - 1][s + p - 1][c]
-    return table[-1][0]
+    print()
+    return table[-1][0][start]
 
 def main():
-    with open('resources/day19-example.txt', 'r') as f:
+    with open('resources/day19.txt', 'r') as f:
         [first, inp] = [p.strip() for p in f.read().split('\n\n') if p.strip()]
         rules = re.findall(r'(\w+) => (\w+)', first)
         print(f'Part 1: {len(apply(rules, inp))}')
@@ -120,8 +122,8 @@ def main():
         cfg = [[lhs, tokenize(rhs)] for [lhs, rhs] in rules]
         start = 'e'
         _, cnf = to_cnf(cfg, start)
-        print('Generated CNF:')
-        print('\n'.join(f'{lhs} => {rhs} ({skips} skip(s))' for [lhs, rhs, skips] in cnf))
+        # print('Generated CNF:')
+        # print('\n'.join(f'{lhs} => {rhs} ({skips} skip(s))' for [lhs, rhs, skips] in cnf))
         print(f'Part 2: {cyk(cnf, tokenize(inp), start)}')
 
 if __name__ == "__main__":
