@@ -14,6 +14,17 @@ def main():
         [first, start] = [p.strip() for p in f.read().split('\n\n') if p.strip()]
         rules = re.findall(r'(\w+) => (\w+)', first)
         print(f'Part 1: {len(apply(rules, start))}')
+        molecules = {'e'}
+        i = 0
+        while start not in molecules:
+            new_molecules = set()
+            for mol in list(molecules):
+                for new in apply(rules, mol):
+                    new_molecules.add(new)
+            molecules = new_molecules
+            i += 1
+            print(f'>> {i} ({len(molecules)} total)')
+        print(f'Part 2: {i}')
 
 if __name__ == "__main__":
     main()
