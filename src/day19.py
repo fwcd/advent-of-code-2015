@@ -108,6 +108,14 @@ def cyk(cnf, inp, start):
                             table[l - 1][s - 1][a] = value(a) + table[p - 1][s - 1][b] + table[l - p - 1][s + p - 1][c]
     return 1 + table[-1][0][start]
 
+# TODO: The currently used method of summing up nodes (to get the number of edges
+#       in the non-transformed grammar tree) seems to be flawed, since e.g. unit
+#       rules could have been eliminated. Therefore it might be necessary to track
+#       the 'depth' of a collapsed unit rule in the CNF rules (this depth could be
+#       computed by memorizing the number of iterations in 'trans_unit'). Also,
+#       many duplicate rules are currently generated during the CNF transformation,
+#       which makes it harder to reason about the generated grammar.
+
 def main():
     with open('resources/day19.txt', 'r') as f:
         [first, inp] = [p.strip() for p in f.read().split('\n\n') if p.strip()]
