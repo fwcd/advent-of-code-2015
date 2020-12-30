@@ -1,3 +1,5 @@
+import sys
+
 def house(n):
     total = n
     for i in range(1, (n // 2) + 1):
@@ -11,6 +13,9 @@ def main():
         part1 = 0
         while house(part1) < n:
             part1 += 1
+            if part1 % 1000 == 0:
+                sys.stdout.write(f'\r{part1}: {house(part1)}')
+        print()
         print(f'Part 1: {part1}')
 
 if __name__ == '__main__':
