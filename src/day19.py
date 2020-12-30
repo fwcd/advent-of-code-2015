@@ -20,7 +20,8 @@ def main():
             new_molecules = set()
             for mol in list(molecules):
                 for new in apply(rules, mol):
-                    new_molecules.add(new)
+                    if len(new) <= len(start):
+                        new_molecules.add(new)
             molecules = new_molecules
             i += 1
             print(f'>> {i} ({len(molecules)} total)')
