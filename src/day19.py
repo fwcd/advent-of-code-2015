@@ -1,11 +1,11 @@
 import re
 
-def apply(rules, start):
+def apply(rules, inp):
     molecules = set()
     for [lhs, rhs] in rules:
-        for i in range(len(start) - len(lhs) + 1):
-            if start[i:(i + len(lhs))] == lhs:
-                new = start[:i] + rhs + start[(i + len(lhs)):]
+        for i in range(len(inp) - len(lhs) + 1):
+            if inp[i:(i + len(lhs))] == lhs:
+                new = inp[:i] + rhs + inp[(i + len(lhs)):]
                 molecules.add(new)
     return molecules
 
@@ -82,13 +82,43 @@ def to_cnf(cfg, start):
     cnf = trans_unit(cnf)
     return (s0, cnf)
 
+# Solves part 2 by parsing the given (tokenized) string using the
+# CYK-algorithm and outputting the number of edges in the parse tree
+# (all nodes starting with an underscore have been created during CNF
+# generation and are not considered in the sum).
+def cyk(cnf, inp, start):
+    def value(tok):
+        return 0 if tok.startswith('__') else 1
+
+    # Source: https://en.wikipedia.org/wiki/CYK_algorithm
+    # The table used to store intermediate results
+    # Each cell has the type {string: int} where the value
+    # represents the sum and key the nonterminal
+    table = [[dict() for j in range(len(inp))] for i in range(len(inp))]
+    for (i, tok) in enumerate(inp):
+        table[0][i] = {lhs: 0 for [lhs, rhs] in cnf if rhs == [tok] or lhs == tok}
+    for l in range(2, len(inp) + 1): # length of span
+        print('at', l)
+        for s in range(1, len(inp) - l + 2): # start of span
+            for p in range(1, l): # partition of span
+                for [a, rhs] in cnf:
+                    if len(rhs) == 2:
+                        [b, c] = rhs
+                        if b in table[p - 1][s - 1] and c in table[l - p - 1][s + p - 1]:
+                            table[l - 1][s - 1][a] = value(a) + table[p - 1][s - 1][b] + table[l - p - 1][s + p - 1][c]
+    return 1 + table[-1][0][start]
+
 def main():
     with open('resources/day19.txt', 'r') as f:
-        [first, start] = [p.strip() for p in f.read().split('\n\n') if p.strip()]
+        [first, inp] = [p.strip() for p in f.read().split('\n\n') if p.strip()]
         rules = re.findall(r'(\w+) => (\w+)', first)
-        print(f'Part 1: {len(apply(rules, start))}')
-        cfg = [[lhs, re.findall('[A-Z][a-z]*', rhs)] for [lhs, rhs] in rules]
-        print(to_cnf(cfg, 'e'))
+        print(f'Part 1: {len(apply(rules, inp))}')
+        def tokenize(s):
+            return re.findall('[A-Z][a-z]*', s)
+        cfg = [[lhs, tokenize(rhs)] for [lhs, rhs] in rules]
+        start = 'e'
+        _, cnf = to_cnf(cfg, inp)
+        print(f'Part 2: {cyk(cnf, tokenize(inp), start)}')
 
 if __name__ == "__main__":
     main()
