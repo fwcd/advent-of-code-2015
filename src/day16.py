@@ -13,5 +13,8 @@ def main():
             if all(props[k] == given[k] for k in props.keys() if k in given.keys()):
                 print(f'Part 1: {i}')
 
+            if all(props[k] > given[k] if k in ['cats', 'trees'] else props[k] < given[k] if k in ['pomeranians', 'goldfish'] else props[k] == given[k] for k in props.keys() if k in given.keys()):
+                print(f'Part 2: {i}')
+
 if __name__ == "__main__":
     main()
