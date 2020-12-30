@@ -68,9 +68,11 @@ def trans_unit(cfg):
     new = []
     for [lhs, rhs] in cfg:
         transitive = rhs
+        skips = 0
         while len(transitive) == 1 and transitive[0] in nons:
             transitive = [r for [l, r] in cfg if l == transitive[0]][0]
-        new.append([lhs, transitive])
+            skips += 1
+        new.append([lhs, transitive, skips])
     return new
 
 # Convert to Chomsky-Normal-Form
@@ -96,28 +98,20 @@ def cyk(cnf, inp, start):
     # represents the sum and key the nonterminal
     table = [[dict() for j in range(len(inp))] for i in range(len(inp))]
     for (i, tok) in enumerate(inp):
-        table[0][i] = {lhs: 0 for [lhs, rhs] in cnf if rhs == [tok] or lhs == tok}
+        table[0][i] = {lhs: skips for [lhs, rhs, skips] in cnf if rhs == [tok] or lhs == tok}
     for l in range(2, len(inp) + 1): # length of span
         print('at', l)
         for s in range(1, len(inp) - l + 2): # start of span
             for p in range(1, l): # partition of span
-                for [a, rhs] in cnf:
+                for [a, rhs, skips] in cnf:
                     if len(rhs) == 2:
                         [b, c] = rhs
                         if b in table[p - 1][s - 1] and c in table[l - p - 1][s + p - 1]:
-                            table[l - 1][s - 1][a] = value(a) + table[p - 1][s - 1][b] + table[l - p - 1][s + p - 1][c]
-    return 1 + table[-1][0][start]
-
-# TODO: The currently used method of summing up nodes (to get the number of edges
-#       in the non-transformed grammar tree) seems to be flawed, since e.g. unit
-#       rules could have been eliminated. Therefore it might be necessary to track
-#       the 'depth' of a collapsed unit rule in the CNF rules (this depth could be
-#       computed by memorizing the number of iterations in 'trans_unit'). Also,
-#       many duplicate rules are currently generated during the CNF transformation,
-#       which makes it harder to reason about the generated grammar.
+                            table[l - 1][s - 1][a] = value(a) + skips + table[p - 1][s - 1][b] + table[l - p - 1][s + p - 1][c]
+    return table[-1][0]
 
 def main():
-    with open('resources/day19.txt', 'r') as f:
+    with open('resources/day19-example.txt', 'r') as f:
         [first, inp] = [p.strip() for p in f.read().split('\n\n') if p.strip()]
         rules = re.findall(r'(\w+) => (\w+)', first)
         print(f'Part 1: {len(apply(rules, inp))}')
@@ -125,7 +119,9 @@ def main():
             return re.findall('[A-Z][a-z]*', s)
         cfg = [[lhs, tokenize(rhs)] for [lhs, rhs] in rules]
         start = 'e'
-        _, cnf = to_cnf(cfg, inp)
+        _, cnf = to_cnf(cfg, start)
+        print('Generated CNF:')
+        print('\n'.join(f'{lhs} => {rhs} ({skips} skip(s))' for [lhs, rhs, skips] in cnf))
         print(f'Part 2: {cyk(cnf, tokenize(inp), start)}')
 
 if __name__ == "__main__":
