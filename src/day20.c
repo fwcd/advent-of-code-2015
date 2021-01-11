@@ -3,7 +3,7 @@
 
 long house(long n) {
     long total = n;
-    for (long i = 1; i <= (total / 2); i++) {
+    for (long i = 1; i <= (n / 2); i++) {
         if (n % i == 0) {
             total += i;
         }
@@ -17,6 +17,7 @@ int main(void) {
     fscanf(f, "%ld", &n);
     fclose(f);
     long part1 = 0;
+    printf("Looking for %ld...\n", n);
     while (house(part1) < n) {
         part1 += 1;
         if (part1 % 10000 == 0) {
