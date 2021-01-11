@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 long house(long n) {
-    long total = n
-    for (long i = 0; i <= (total / 2); i++) {
+    long total = n;
+    for (long i = 1; i <= (total / 2); i++) {
         if (n % i == 0) {
             total += i;
         }
@@ -12,15 +12,15 @@ long house(long n) {
 }
 
 int main(void) {
-    FILE *f = fopen("resources/day20.txt");
+    FILE *f = fopen("resources/day20.txt", "r");
     long n;
-    fscanf(f, "%d", &n);
+    fscanf(f, "%ld", &n);
     fclose(f);
     long part1 = 0;
     while (house(part1) < n) {
         part1 += 1;
-        if (part1 % 1000 == 0) {
-            printf("\r%ld", part1);
+        if (part1 % 10000 == 0) {
+            printf("%ld: %ld\n", part1, house(part1));
         }
     }
     printf("\nPart 1: %ld\n", part1);

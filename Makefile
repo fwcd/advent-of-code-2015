@@ -1,8 +1,11 @@
 OUTDIR = $(CURDIR)/out
 SRCDIR = $(CURDIR)/src
 
-$(OUTDIR)/%: $(SRCDIR)/%.c $(OUTDIR)
-	$(CC) -o $(OUTDIR)/% $(SRCDIR)/%.c
+.PHONY:
+all: $(OUTDIR)/day20
+
+$(OUTDIR)/day20: $(SRCDIR)/day20.c $(OUTDIR)
+	$(CC) -Wall -Ofast -o $(OUTDIR)/day20 $(SRCDIR)/day20.c
 
 $(OUTDIR):
-	mkdir $(OUTDIR)
+	mkdir -p $(OUTDIR)
